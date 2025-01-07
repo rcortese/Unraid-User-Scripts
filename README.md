@@ -4,11 +4,11 @@ A personal collection of scripts for Unraid Server. These scripts can be execute
 
 (Currently tested on Unraid v7.0.0-rc.2)
 
-## [cycle_vms.sh](cycle_vms.sh)
+## [vm_cycle.sh](vm_cycle.sh)
 
-Cycles through a list of VMs, designed for resource-sharing VMs (such as gaming/mining VMs sharing the same GPU).
+Designed for resource-sharing VMs (such as gaming/mining VMs sharing the same GPU), this script cycles through a list shutting down one VM and starting the next.
 
-* The user must populate the `VM_NAMES_LIST` variable upon import.
+* The user must set `VM_NAMES` and 3 other configuration variables upon import.
 
 ```sh
 # Example: populate VM_NAMES_LIST with your setup
@@ -27,19 +27,20 @@ The script functions as follows (using `virsh`):
 
 If executed from within a VM on the list, run it in the background to prevent script termination upon VM shutdown.
 
-Inspired by a [tutorial video by SpaceInvader One](https://www.youtube.com/watch?v=QoVJ0460cro).
+Inspired by [a tutorial video by SpaceInvader One](https://www.youtube.com/watch?v=QoVJ0460cro).
 
-## [bind_usb_devices_to_vm.sh](bind_usb_devices_to_vm.sh)
+
+## [vm_bind_usb_devices.sh](vm_bind_usb_devices.sh)
 
 Binds USB devices to a VM until successful (or timeout occurs).
 
 Created to address the issue of permanently binding USB devices to a VM, which requires these devices to be connected at startup. This script resolves issues with KVM switches and other devices by binding devices on each VM startup, ensuring proper VM startup while being slightly less convenient.
 
-## [start_vm_shared_gpu_docker.sh](start_vm_shared_gpu_docker.sh)
+## [vm_start_shared_gpu.sh](vm_start_shared_gpu.sh)
 
-Launches a VM in a detached screen session, allowing GPU sharing between VMs and Docker containers (used for mining, LLM, video transcoding, etc.).
+Intended for use when passing the same GPU to both a VM and a Docker container.
 
-**Intended for use when passing the GPU to both a VM and a Docker container. Not necessary if the GPU isn't shared between the VM and Docker.**
+This script automatically starts the VM in a detached screen session and then stops the container, allowing the VM to utilize the GPU. Once the VM is stopped, the container is automatically started again. This allows for seamless sharing of a single GPU between VMs and Docker containers alternating resource reservation.
 
-* The user must set `VM_NAME` and `DOCKER_CONTAINER_NAME` variables upon import.
+* The user must set `VM_NAME` and `CONTAINER_NAME` variables upon import.
 

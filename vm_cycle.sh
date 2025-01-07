@@ -2,7 +2,7 @@
 set -e
 
 # User filled variables
-readonly VM_NAMES=( "HiveOS" "Windows 10" )
+readonly VM_NAMES=( "HiveOS" "Win11" )
 readonly GRACEFUL_SHUTDOWN_TIMEOUT=30
 readonly FORCED_SHUTDOWN_TIMEOUT=10
 readonly FORCE_SHUTDOWN_IF_TIMEOUT=true

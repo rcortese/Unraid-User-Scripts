@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Definir nomes da VM e do container
-VM_NAME="nome_da_vm"
-CONTAINER_NAME="nome_do_container"
+VM_NAME="Win11"
+CONTAINER_NAME="ollama"
 
 is_vm_running() { [ "$(virsh list --state-running | grep -c "$VM_NAME")" -eq 1 ]; }
 
