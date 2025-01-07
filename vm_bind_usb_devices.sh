@@ -22,11 +22,7 @@ readonly TIMEOUT=60
 is_vm_active() {
   local vm_name="$1"
 
-  if virsh list | grep -q "$vm_name"; then
-    return 0
-  else
-    return 1
-  fi
+  virsh list --name | grep -q "^$vm_name$"
 }
 
 # Bind device to VM
@@ -41,37 +37,31 @@ bind_device() {
 }
 
 # Main function...
-# The magic starts here
 main() {
+  local vm_active=0
   local time_elapsed=0
 
-  until (( time_elapsed > TIMEOUT )); do
+  # Wait for VM to be active
+  while (( time_elapsed <= TIMEOUT )); do
     if is_vm_active "$VM_NAME"; then
-      echo "$VM_NAME active! Binding devices..."
-
-      for device in "${DEVICES_LIST[@]}"; do
-        echo "Binding $device to $VM_NAME"
-        bind_device "id" "id"
-      done
-
+      vm_active=1
       break
     else
-      echo "$VM_NAME not active yet..."
-      sleep 1
       ((time_elapsed++))
+      sleep 1
     fi
   done
 
-  if ! is_vm_active "$VM_NAME"; then
-    echo "Error: $VM_NAME not active!"
+  if (( vm_active == 0 )); then
+    echo "Error: $VM_NAME not active after $TIMEOUT seconds." >&2
     exit 1
-  else
-    echo "Success: script has tried to bind the following devices to $VM_NAME:"
-    for device in "${DEVICES_LIST[@]}"; do
-      echo "  - $device"
-    done
-    exit 0
   fi
+
+  for device in "${DEVICES_LIST[@]}"; do
+    echo "Binding $device to $VM_NAME"
+    # TODO: remove hardcoded values + implement bind_device
+    bind_device "id" "id"
+  done
 }
 
 main
