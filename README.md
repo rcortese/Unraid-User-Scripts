@@ -34,3 +34,11 @@ Inspired by a [tutorial video by SpaceInvader One](https://www.youtube.com/watch
 Binds USB devices to a VM until succesful (or timeout).
 
 Created because binding USB devices permanently to a VM makes it a requirement that such devices be connected upon it's startup. This causes issues with KVM Switches and many other devices. By not binding the devices permanently and running this script on every VM startup instead, proper VM startup is ensured, although somewhat more inconveniently.
+
+## [start_vm_shared_gpu_docker.sh](start_vm_shared_gpu_docker.sh)
+
+Starts a VM in a detached screen session. Used to share a GPU between VMs and Docker containers (for example, for mining, LLM, video transcoding, etc.)
+
+**This script is intended to be used with the GPU passed through to the VM AND a Docker container. It is not necessary to use this script if you are not passing the GPU to both the VM and Docker.**
+
+* User must fill vm_name and docker_container_name variables upon import
