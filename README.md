@@ -1,10 +1,10 @@
-# Unraid Scripts Collection
+# Unraid Scripts
 
 My own personal collection of scripts for Unraid Server. Can be run directly via ssh, console, or through the User Scripts plugin.
 
 (currently only tested on Unraid v6.9.2)
 
-## [cycle_vms.sh](scripts/cycle_vms.sh)
+## [cycle_vms.sh](cycle_vms.sh)
 
 Cycles between a list of VMs. Intended to be used with resource sharing VMs (such as gaming/mining VMs that pass-through the same GPU).
 
@@ -29,8 +29,8 @@ The script works as such (using virsh):
 
 Inspired by a [tutorial video by SpaceInvader One](https://www.youtube.com/watch?v=QoVJ0460cro).
 
-## [bind_usb_devices_to_vm.sh](scripts/bind_usb_devices_to_vm.sh)
+## [bind_usb_devices_to_vm.sh](bind_usb_devices_to_vm.sh)
 
-Binds USB devices to a VM until succesful (or timeout.
+Binds USB devices to a VM until succesful (or timeout).
 
 Created because binding USB devices permanently to a VM makes it a requirement that such devices be connected upon it's startup. This causes issues with KVM Switches and many other devices. By not binding the devices permanently and running this script on every VM startup instead, proper VM startup is ensured, although somewhat more inconveniently.
