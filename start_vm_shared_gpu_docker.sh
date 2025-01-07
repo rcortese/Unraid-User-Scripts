@@ -4,16 +4,9 @@
 VM_NAME="nome_da_vm"
 CONTAINER_NAME="nome_do_container"
 
-is_gpu_unused() {
-  local result=$(nvidia-smi --query-gpu=memory.used --format=csv,noheader,nounits)
-  [ "$result" = "0" ]
-}
+is_vm_running() { [ "$(virsh list --state-running | grep -c "$VM_NAME")" -eq 1 ]; }
 
-is_container_running() {
-  local container_status
-  container_status=$(docker inspect --format '{{ .State.Running }}' "$CONTAINER_NAME" 2> /dev/null)
-  [ "$container_status" = "true" ]
-}
+is_container_running() { [ "$(docker inspect --format '{{ .State.Running }}' "$CONTAINER_NAME" 2> /dev/null)" = "true" ]; }
 
 main() {
 
@@ -22,17 +15,14 @@ main() {
 
   # Aguardar até que o container seja desligado
   while is_container_running; do
+    echo "Waiting for container to be stopped..."
     sleep 1
   done
 
-  # Iniciar a VM e aguardar até que ela esteja rodando
   virsh start $VM_NAME
   sleep 30
 
-  while ! is_gpu_unused; do
-    
-    echo "GPU em uso"
-    # aguardar até proxima verificacao
+  while is_vm_running; do
     sleep 60
   done
   
