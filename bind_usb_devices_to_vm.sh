@@ -2,33 +2,25 @@
 set -e
 
 ###################################################
-## User filled variables
+## Variables
 ##
 
-# vm name as listed by virsh (same as on Unraid VM tab)
-declare -r vm_name="Windows 10"
+# VM name as listed by virsh (same as on Unraid VM tab)
+readonly VM_NAME="Windows 10"
 
-# list of devices to bind
-declare -r -a devices_list=( "Logitech mouse" "K78 Keyboard" )
+# List of devices to bind
+readonly -a DEVICES_LIST=("Logitech mouse" "K78 Keyboard")
 
-# timeout
-declare -r -i timeout=60
-
-# no action, only logs if set to true
-declare -r debug_mode=true
-
-##
-## IMPORTANT: FILL THE VARIABLES ABOVE ACCORDINGLY
-###################################################
+# Timeout
+readonly TIMEOUT=60
 
 ###################################################
 ## Functions
 
-# Returns true (0) if vm is listed as active
-# $1 - name of vm to search for
-vm_is_active() {
-
-  local -r vm_name="$1"
+# Returns true (0) if VM is listed as active
+# $1 - name of VM to search for
+is_vm_active() {
+  local vm_name="$1"
 
   if virsh list | grep -q "$vm_name"; then
     return 0
@@ -37,58 +29,50 @@ vm_is_active() {
   fi
 }
 
-# Bind device to vm
+# Bind device to VM
 # $1 - device idVendor
 # $2 - device idProduct
 bind_device() {
+  local idVendor="$1"
+  local idProduct="$1"
 
-  local -r idVendor="$1"; shift
-  local -r idProduct="$1"; shift
-
-  if [ "$debug_mode" = true ]; then
-    echo "--- no action taken, debug mode only ---"
-  else
-    # virsh attach-device $vm_name --file usb_device.xml --current
-  fi
+  # TODO:
+  # virsh attach-device $vm_name --file usb_device.xml --current
 }
 
-# Main funcion...
+# Main function...
 # The magic starts here
 main() {
+  local time_elapsed=0
 
-  local -i time_elapsed=0
-  until $time_elapsed -gt $timeout
-  do
-    if vm_is_active "$vm_name"; then
-      echo "$vm_name active!"
-      echo "binding devices..."
-      for i in "${!devices_list[@]}"
-      do
-        echo "binding ${devices_list[i]} to $vm_name"
-        # TODO:
+  until (( time_elapsed > TIMEOUT )); do
+    if is_vm_active "$VM_NAME"; then
+      echo "$VM_NAME active! Binding devices..."
+
+      for device in "${DEVICES_LIST[@]}"; do
+        echo "Binding $device to $VM_NAME"
         bind_device "id" "id"
       done
-      # virsh bind usb device
-      ((time_elapsed++)) # just in case
+
       break
     else
-      echo "$vm_name not active yet..."
-      sleep 1 && ((time_elapsed++))
+      echo "$VM_NAME not active yet..."
+      sleep 1
+      ((time_elapsed++))
     fi
   done
 
-  sleep 1
-
-  if ! vm_is_active "$vm_name"; then
-    echo "Error: $vm_name not active!"
+  if ! is_vm_active "$VM_NAME"; then
+    echo "Error: $VM_NAME not active!"
     exit 1
-  # elif device not bound
-    # echo device not bound
-    # exit 1
   else
-    echo "Success: devices have been bound to $vm_to_start!"
+    echo "Success: script has tried to bind the following devices to $VM_NAME:"
+    for device in "${DEVICES_LIST[@]}"; do
+      echo "  - $device"
+    done
     exit 0
   fi
 }
 
 main
+

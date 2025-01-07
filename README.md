@@ -1,44 +1,45 @@
 # Unraid Scripts
 
-My own personal collection of scripts for Unraid Server. Can be run directly via ssh, console, or through the User Scripts plugin.
+A personal collection of scripts for Unraid Server. These scripts can be executed via SSH, console, or through the User Scripts plugin.
 
-(currently only tested on Unraid v6.9.2)
+(Currently tested on Unraid v7.0.0-rc.2)
 
 ## [cycle_vms.sh](cycle_vms.sh)
 
-Cycles between a list of VMs. Intended to be used with resource sharing VMs (such as gaming/mining VMs that pass-through the same GPU).
+Cycles through a list of VMs, designed for resource-sharing VMs (such as gaming/mining VMs sharing the same GPU).
 
-* User must fill vm_names_list variable upon import
+* The user must populate the `VM_NAMES_LIST` variable upon import.
 
-``` sh
-# example (vm_names_list already declared in the headers, fill it with your setup)
-declare -r -a vm_names_list=( "Pop_OS" "Windows 10" "HiveOS" )
+```sh
+# Example: populate VM_NAMES_LIST with your setup
+declare -r -a VM_NAMES_LIST=("Pop_OS" "Windows10" "HiveOS")
 ```
 
-The script works as such (using virsh):
+The script functions as follows (using `virsh`):
 
-* Search for an active VM within the list
-* If a VM is listed as active
-  * Shuts it down
-  * Checks periodically until it is no longer listed (or timeout)
-* Starts next one on the list
-* If startup is not successful
-  * Start originally active VM again
+* Searches for an active VM within the list.
+* If an active VM is found:
+  * Shuts it down.
+  * Periodically checks until it is no longer active (or timeout occurs).
+* Starts the next VM in the list.
+* If startup is unsuccessful:
+  * Restarts the originally active VM.
 
- If started from inside a VM on the list, run it on the background otherwise the script is killed upon VM shut down.
+If executed from within a VM on the list, run it in the background to prevent script termination upon VM shutdown.
 
 Inspired by a [tutorial video by SpaceInvader One](https://www.youtube.com/watch?v=QoVJ0460cro).
 
 ## [bind_usb_devices_to_vm.sh](bind_usb_devices_to_vm.sh)
 
-Binds USB devices to a VM until succesful (or timeout).
+Binds USB devices to a VM until successful (or timeout occurs).
 
-Created because binding USB devices permanently to a VM makes it a requirement that such devices be connected upon it's startup. This causes issues with KVM Switches and many other devices. By not binding the devices permanently and running this script on every VM startup instead, proper VM startup is ensured, although somewhat more inconveniently.
+Created to address the issue of permanently binding USB devices to a VM, which requires these devices to be connected at startup. This script resolves issues with KVM switches and other devices by binding devices on each VM startup, ensuring proper VM startup while being slightly less convenient.
 
 ## [start_vm_shared_gpu_docker.sh](start_vm_shared_gpu_docker.sh)
 
-Starts a VM in a detached screen session. Used to share a GPU between VMs and Docker containers (for example, for mining, LLM, video transcoding, etc.)
+Launches a VM in a detached screen session, allowing GPU sharing between VMs and Docker containers (used for mining, LLM, video transcoding, etc.).
 
-**This script is intended to be used with the GPU passed through to the VM AND a Docker container. It is not necessary to use this script if you are not passing the GPU to both the VM and Docker.**
+**Intended for use when passing the GPU to both a VM and a Docker container. Not necessary if the GPU isn't shared between the VM and Docker.**
 
-* User must fill vm_name and docker_container_name variables upon import
+* The user must set `VM_NAME` and `DOCKER_CONTAINER_NAME` variables upon import.
+
