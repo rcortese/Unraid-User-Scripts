@@ -1,28 +1,22 @@
 #!/bin/bash
 
 # Definir nomes da VM e do container
-vm_gpu="nome_da_vm"
-docker_gpu="nome_do_container"
+VM_NAME="nome_da_vm"
+CONTAINER_NAME="nome_do_container"
 
 # Verificar se a GPU está disponível
 gpu_available=$(nvidia-smi --query-gpu=memory.used --format='csv' | tail -n 1)
 
 while [ "$gpu_available" = "0" ]; do
-  # Reiniciar o container e aguardar até que ele esteja desligado
-  systemctl start $docker_gpu &> /dev/null
+
+  docker stop $CONTAINER_NAME
   
-  while [ $? -eq 0 ]; do
+  while [ "$(docker inspect --format '{{ .State.Running }}' "$CONTAINER_NAME" 2> /dev/null)" = "true" ]; do
     sleep 1
-    if [ $(systemctl is-active --quiet $docker_gpu) = "active" ]; then
-      echo "Container em execução, aguardando a VM"
-      sleep 10
-    else
-      break
-    fi
   done
   
   # Iniciar a VM quando o container estiver desligado
-  virsh start $vm_gpu
+  virsh start $VM_NAME
   
   # Aguardar até que a VM esteja rodando corretamente
   sleep 30
