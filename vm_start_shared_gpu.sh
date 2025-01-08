@@ -15,7 +15,6 @@ start_vm() {
   virsh start "$VM_NAME"
   virsh resume "$VM_NAME"
 }
-ssh -o StrictHostKeyChecking=no root@media.lan bash /boot/config/plugins/user.scripts/scripts/vm_start_shared_gpu/script &
 
 main() {
 
