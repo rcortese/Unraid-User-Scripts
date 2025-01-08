@@ -21,8 +21,7 @@ Intended for use when passing the same GPU to both a VM and a Docker container.
 This script automatically starts the VM in a detached screen session and then stops the container, allowing the VM to utilize the GPU. Once the VM is stopped, the container is automatically started again. This allows for seamless sharing of a single GPU between VMs and Docker containers alternating resource reservation.
 
 * The user must set `VM_NAME` and `CONTAINER_NAME` variables upon import.
-* If only `COMPOSE_FILE_PATH` is set, the script stops the container using `docker-compose` to stop the container.
-* If both `COMPOSE_FILE_PATH` and `ENV_FILE_PATH` are set, the script updates the container using `docker-compose` to use the new env file, where gpu access should be disabled.
+* If both `COMPOSE_FILE_PATH` and `ENV_FILE_PATH` are set, the script stops the container and starts a new one, using the new env file. Gpu access should be disabled by this env file provided by the user.
 
 ## [vm_bind_usb_devices.sh](vm_bind_usb_devices.sh) (⚠️WIP)
 
