@@ -3,8 +3,8 @@
 # Definir nomes da VM e do container
 VM_NAME="Win11"
 CONTAINER_NAME="ollama"
-ENV_FILE_PATH="/mnt/user/appdata/llm-stack/cpu-only.env" # Opcional
-COMPOSE_FILE_PATH="/mnt/user/appdata/llm-stack/docker-compose.yml" # Opcional
+COMPOSE_FILE_PATH="/mnt/user/appdata/llm-stack/docker-compose.yaml" # Opcional: Usa docker-compose caso definido
+ENV_FILE_PATH="/mnt/user/appdata/llm-stack/cpu-only.env" # Opcional: Reinicia o container com o env file fornecido enquanto a VM estiver em execução (depende compose)
 
 is_vm_running() { [ "$(virsh list --state-running | grep -c "$VM_NAME")" -eq 1 ]; }
 
@@ -28,9 +28,11 @@ main() {
 
   sleep 1
 
+  # Iniciar a VM
   virsh start $VM_NAME
   sleep 30
 
+  # Aguardar até que a VM não esteja mais em execução
   while is_vm_running; do
     sleep 60
   done
