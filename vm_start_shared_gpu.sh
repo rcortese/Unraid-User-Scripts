@@ -3,8 +3,12 @@
 # Definir nomes da VM e do container
 VM_NAME="Win11"
 CONTAINER_NAME="ollama"
-COMPOSE_FILE_PATH="/mnt/user/appdata/llm-stack/docker-compose.yaml" # Opcional: Usa docker-compose caso definido
-ENV_FILE_PATH="/mnt/user/appdata/llm-stack/cpu-only.env" # Opcional: Reinicia o container com o env file fornecido enquanto a VM estiver em execução (depende compose)
+
+# Opcional: Reinicia o container com o env file fornecido enquanto a VM estiver em execução
+COMPOSE_FILE_PATH="/mnt/user/appdata/llm-stack/docker-compose.yaml"
+ENV_FILE_PATH="/mnt/user/appdata/llm-stack/cpu-only.env"
+
+# Funções auxiliares
 
 is_vm_running() { [ "$(virsh list --state-running | grep -c "$VM_NAME")" -eq 1 ]; }
 
@@ -16,7 +20,10 @@ start_vm() {
   virsh resume "$VM_NAME"
 }
 
+# Função principal
+
 main() {
+  local start_alternate_container=false
 
   if is_container_running; then
     # Para o container
@@ -25,32 +32,35 @@ main() {
   fi
 
   if [ -n "$COMPOSE_FILE_PATH" ] && [ -n "$ENV_FILE_PATH" ]; then
+
+    start_alternate_container=true
+
     # Executar nova versão do container usando env file fornecido
     echo "Iniciando container $CONTAINER_NAME com env file $ENV_FILE_PATH..."
     docker-compose --env-file "$ENV_FILE_PATH" -f "$COMPOSE_FILE_PATH" up -d $CONTAINER_NAME
   fi
-
-  sleep 1
 
   # Iniciar a VM
   start_vm
   sleep 30
 
   # Aguardar até que a VM não esteja mais em execução
-  while is_vm_running; do
+  until ! is_vm_running; do
     sleep 60
   done
+  echo "VM $VM_NAME não está mais em execução."
 
-  if [ -n "$COMPOSE_FILE_PATH" ]; then
-    # Reiniciar o container usando docker-compose
-    echo "Reiniciando container $CONTAINER_NAME..."
+  if $start_alternate_container; then
+    # Restaurar o container original usando docker-compose
+    echo "Restaurando container $CONTAINER_NAME com .env original..."
     docker-compose -f "$COMPOSE_FILE_PATH" up -d $CONTAINER_NAME
   else
     # Reiniciar o container
     echo "Reiniciando container $CONTAINER_NAME..."
     docker start $CONTAINER_NAME
   fi
+  
+  exit 0
 }
 
 main
-
