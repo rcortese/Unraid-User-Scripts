@@ -21,12 +21,13 @@ Intended for use when passing the same GPU to both a VM and a Docker container.
 This script automatically starts the VM in a detached screen session and then stops the container, allowing the VM to utilize the GPU. Once the VM is stopped, the container is automatically started again. This allows for seamless sharing of a single GPU between VMs and Docker containers alternating resource reservation.
 
 * The user must set `VM_NAME` and `CONTAINER_NAME` variables upon import.
+* If only `COMPOSE_FILE_PATH` is set, the script stops the container using `docker-compose` to stop the container.
+* If both `COMPOSE_FILE_PATH` and `ENV_FILE_PATH` are set, the script updates the container using `docker-compose` to use the new env file, where gpu access should be disabled.
 
-## [vm_bind_usb_devices.sh](vm_bind_usb_devices.sh) (⚠️WIP) 
+## [vm_bind_usb_devices.sh](vm_bind_usb_devices.sh) (⚠️WIP)
 
 Binds USB devices to a VM until successful (or timeout occurs). Currently a Work In Progress (WIP) and is missing important functionality.
 
 * The user must set `VM_NAME` and `DEVICES_LIST` upon import.
 
 This script is intended to address the issue of permanently binding USB devices to a VM, which requires these devices to be connected at startup.  To work around this, the script binds devices on each VM startup, ensuring proper VM startup even when using KVM switches or other devices. This offers a not so convenient solution of binding through this script, but works around the issue.
-
