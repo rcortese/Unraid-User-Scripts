@@ -10,6 +10,11 @@ is_vm_running() { [ "$(virsh list --state-running | grep -c "$VM_NAME")" -eq 1 ]
 
 is_container_running() { [ "$(docker inspect --format '{{ .State.Running }}' "$CONTAINER_NAME" 2> /dev/null)" = "true" ]; }
 
+start_vm() {
+  virsh start "$VM_NAME"
+  virsh resume "$VM_NAME"
+}
+
 main() {
 
   if [ -n "$COMPOSE_FILE_PATH" ]; then
@@ -29,7 +34,7 @@ main() {
   sleep 1
 
   # Iniciar a VM
-  virsh start $VM_NAME
+  start_vm
   sleep 30
 
   # Aguardar até que a VM não esteja mais em execução
