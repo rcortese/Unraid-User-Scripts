@@ -13,11 +13,7 @@ main() {
   # Parar o container
   docker stop $CONTAINER_NAME
 
-  # Aguardar até que o container seja desligado
-  while is_container_running; do
-    echo "Waiting for container to be stopped..."
-    sleep 1
-  done
+  sleep 1
 
   virsh start $VM_NAME
   sleep 30
